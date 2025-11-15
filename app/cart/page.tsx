@@ -6,7 +6,7 @@ import ShippingForm from "@/components/ShippingForm";
 import { ArrowRight, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ShippingFormInputs } from "@/types";
 import useCartStore from "@/stores/cartStore";
 
@@ -15,7 +15,8 @@ const steps = [
   { id: 2, title: "Shipping Address" },
   { id: 3, title: "Payment Method" },
 ];
-const CartPage = () => {
+// Inner component that uses useSearchParams must be wrapped in Suspense
+const CartPageInner = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [shippingForm, setShippingForm] = useState<ShippingFormInputs>();
@@ -156,4 +157,11 @@ const CartPage = () => {
   );
 };
 
-export default CartPage;
+// Default export wraps the client logic in a Suspense boundary to satisfy Next.js requirements
+export default function CartPage() {
+  return (
+    <Suspense fallback={<div className="mt-12 text-center">Loading cart...</div>}>
+      <CartPageInner />
+    </Suspense>
+  );
+}
